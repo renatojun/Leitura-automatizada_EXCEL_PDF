@@ -1,0 +1,132 @@
+#Esse código está embaralhado porque ele carregaos testes para o código original 
+
+# Instale os pacotes necessários
+install.packages("pdftools")
+install.packages("openxlsx")
+install.packages("xlsx")
+
+remove.packages("openxlsx")
+
+# Carregue os pacotes
+library(pdftools)
+library(openxlsx)
+library(xlsx)
+
+# Caminho para o arquivo PDF do cartão de ponto
+caminho_pdf <- "../Test_PJ//C_P_teste.pdf"
+
+# Extraia o texto do PDF
+texto_pdf <- pdf_text(caminho_pdf)
+
+# Exiba o texto extraído (opcional)
+cat(texto_pdf)
+
+# Processamento do texto e extração das entradas e saídas
+# Aqui você precisaria implementar a lógica para extrair as informações relevantes
+
+--------------------------------------------------------------------
+  
+# Exemplo de dados de entrada e saída
+seus_dados_de_entrada <- c("07:00")  # Exemplo de horários de entrada
+seus_dados_de_saida <- c("12:00")     # Exemplo de horários de saída
+
+# Criar um dataframe com os dados
+dados <- data.frame(
+  Ocorrência = c("01/04/2024", "02/04/2024", "03/04/2024", "04/04/2024", "05/04/2024", "06/04/2024", "07/04/2024"),
+  Semana = c("Segunda-feira", "Terça-fera", "Quarta-feira","Quinta-feira", "Sexta-feira", "Sábado", "Domingo"),
+  Entrada = c("07:00"),
+  Saída = c("12:00"),
+  Entrada2 = c("13:00"),
+  Saída2 = c("18:00")
+  )
+-----------------------------------------------------------------------------------
+#Outra alternativa - que não deu certo, porque a matrix lê números múltiplos, 4x4, 5x5, e eu quero ler um pdf de 4x15 
+dados <- data.frame(matrix(unlist(dados), ncol = 4, byrow = TRUE))
+-----------------------------------------------------------------------------------
+#Usado para converter "dados" para character
+class(dados)
+dados <- as.character(dados)
+
+# Separação dos dados em colunas separadas
+dados_separados <- strsplit(dados, "\n")  # Use "\n" para separar as colunas
+
+# Criar um dataframe com os dados separados
+dados_finais <- data.frame(matrix(unlist(dados_separados), ncol = 6, byrow = TRUE))
+
+# Nome das colunas
+colnames(dados_finais) <- c("Ocorrência", "Semana", "Entrada", "Saída", "Entrada2", "Saída2") 
+
+#--------------- DAQUI PRA CIMA TÁ O ESQUEMA, CONJUNTO DE 2 COLUNAS E TALS
+
+# Abra a planilha do Excel
+wb <- loadWorkbook("../Test_PJ//Test_PJ.xlsx")
+
+# Selecione a folha e a célula onde deseja inserir os dados
+# Suponha que você queira inserir os dados na primeira coluna, começando na segunda linha
+addWorksheet(wb, "Test_PJ")  # Nome da sua planilha ou folha
+---------------------------------------------------------------------
+# Escreva os dados nas colunas correspondentes na planilha Excel
+writeData(wb, "Test_PJ", dados_finais, startCol = 1, startRow = 1)
+
+# Salve a planilha atualizada
+saveWorkbook(wb, "../Test_PJ//Test_PJ.xlsx", overwrite = TRUE)
+
+# Mensagem de conclusão
+print("Dados escritos com sucesso na planilha Excel.")
+
+---------------------------------------------------------------------
+
+# Criar um dataframe com os dados separados
+dados_finais <- data.frame(matrix(unlist(dados), ncol = 3, byrow = TRUE))
+
+dados <- data.frame(
+  Registro = c("Segunda 07:00", "Segunda 12:00", "Terça 07:00", "Terça 12:00", "Quarta 07:00", "Quarta 12:00", "Quinta 07:00", "Quinta 12:00", "Sexta 07:00", "Sexta 12:00", "Sábado 07:00", "Sábado 12:00", "Domingo 07:00", "Domingo 12:00"),
+  stringsAsFactors = FALSE
+)
+#Criar um data frame com os dados separados
+dados_finais <- data.frame(matrix(unlist(dados_separados), ncol = 3, byrow = TRUE))
+
+
+# Exemplo de extração de entradas e saídas
+entradas <- subset(dados, grepl("07:00", Registro))$Registro
+saídas <- subset(dados, grepl("12:00", Registro))$Registro
+
+# Exiba as entradas e saídas (opcional)
+print(entradas)
+print(saídas)
+
+# Abra a planilha do Excel
+wb <- loadWorkbook("../Test_PJ//Test_PJ.xlsx")
+
+# Selecione a folha e a célula onde deseja inserir os dados
+# Suponha que você queira inserir os dados na primeira coluna, começando na segunda linha
+addWorksheet(wb, "../Test_PJ//Test_PJ.xlsx")  # Nome da sua planilha ou folha
+writeData(wb, "../Test_PJ//Test_PJ.xlsx", "Entrada", startCol = 1, startRow = 1)
+writeData(wb, "../Test_PJ//Test_PJ.xlsx", "Saída", startCol = 2, startRow = 1)
+
+# Escreva os dados na planilha
+# Supondo que os dados estejam nos vetores 'entradas' e 'saidas'
+writeData(wb, "../Test_PJ//Test_PJ.xlsx", entradas, startCol = 1, startRow = 2)
+writeData(wb, "../Test_PJ//Test_PJ.xlsx", saídas, startCol = 2, startRow = 2)
+
+# Escreva os dados nas planilhas
+writeData(wb, "Entrada", dados$Entrada, startCol = 1, startRow = 1)
+writeData(wb, "Saída", dados$Saída, startCol = 1, startRow = 1)
+
+# Salve a planilha atualizada
+saveWorkbook(wb, "../Test_PJ//Test_PJ.xlsx", overwrite = TRUE)
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
